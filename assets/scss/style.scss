@@ -1,0 +1,351 @@
+// This file is the original "reference.css" converted to SCSS syntax.
+// The visual output is identical to the original CSS — only the way the
+// code is written has changed, using Sass features: variables, nesting,
+// and mixins (as required by the Week 5 assignment).
+
+// ============================
+// Variables
+// ============================
+// Instead of repeating the same font names / colors / breakpoint value
+// everywhere in the file, we store them once here and reuse them below
+// with the $name. If the brand color ever changes, we only edit it here
+// instead of hunting through the whole file.
+
+// Fonts
+$font-body: Quando, sans-serif; // used for regular body text (paragraphs)
+$font-heading: 'Josefin Sans', sans-serif; // used for headings + nav links
+
+// Colors (grabbed straight from the original reference.css hex values)
+$color-text: #787878; // default body text color
+$color-heading: #111111; // headings / default link color
+$color-link-hover: #999999; // link color on hover
+$color-accent: #324360; // the navy/blue brand accent (post titles, nav links)
+$color-accent-hover: #35c4ce; // the teal hover color for accent elements
+$color-footer-bg: #eaf2ff; // light blue footer background
+$color-footer-text: #989898; // footer text / icon color
+
+// The screen width where the layout switches from mobile (stacked,
+// hidden nav) to desktop (horizontal nav, side-by-side article layout)
+$breakpoint-tablet: 650px;
+
+// ============================
+// Mixins
+// ============================
+// A mixin is a reusable block of CSS we can "stamp out" wherever it's
+// needed with @include, instead of retyping the same declarations.
+
+// Shorthand for a transition so we don't repeat "transition: ... ease;"
+// over and over. Defaults match the most common case in this file.
+@mixin transition($props: all, $duration: 0.3s, $ease: ease) {
+    transition: $props $duration $ease;
+}
+
+// Almost every link in this design just changes color on hover.
+// This mixin writes the "&:hover { color: ... }" rule for us.
+@mixin hover-color($color) {
+    &:hover {
+        color: $color;
+    }
+}
+
+// Wraps a block of styles in a "min-width" media query, so instead of
+// writing @media only screen and (min-width: 650px) { ... } by hand
+// every time, we just write @include respond($breakpoint-tablet) { ... }
+@mixin respond($breakpoint) {
+    @media only screen and (min-width: $breakpoint) {
+        @content;
+    }
+}
+
+// ============================
+// Base
+// ============================
+// General page-wide defaults (mobile-first: this is how things look
+// BEFORE the tablet/desktop breakpoint kicks in further down).
+body {
+    font-family: $font-body;
+    font-size: 15px;
+    color: $color-text;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+p {
+    margin-bottom: 25px;
+    line-height: 1.6em;
+}
+
+a {
+    font-weight: 400;
+    text-decoration: none;
+    color: $color-heading;
+    @include transition(color, 0.2s);
+    @include hover-color($color-link-hover);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 25px;
+    margin-bottom: 20px;
+    font-family: $font-heading;
+    font-weight: 400;
+    line-height: 1.3em;
+    word-wrap: break-word;
+    color: $color-heading;
+}
+
+h1 { font-size: 37px; }
+h2 { font-size: 31px; }
+h3 { font-size: 26px; }
+h4 { font-size: 21px; }
+h5 { font-size: 18px; }
+h6 { font-size: 15px; }
+
+.container {
+    width: 94%;
+    margin: 0 auto;
+}
+
+// ============================
+// Header and main nav
+// ============================
+// Nesting here means we don't have to keep typing "header nav ..." or
+// "header .top-logo" — everything inside the header {} block already
+// knows it's scoped under <header>.
+header {
+    font-family: $font-heading;
+
+    nav {
+        ul {
+            // On mobile the dropdown menu is hidden by default.
+            // It becomes visible again inside the @include respond()
+            // block further down, once we're at tablet width or wider.
+            display: none;
+        }
+    }
+
+    .top-logo {
+        width: 200px;
+        margin: 20px auto 40px;
+    }
+}
+
+// ============================
+// Posts
+// ============================
+// Styles for each <article> post block (the image + title + excerpt).
+article {
+    margin-bottom: 50px;
+    display: flex;
+    flex-wrap: wrap; // lets image/content stack on narrow screens
+
+    .image-part {
+        margin-bottom: 10px;
+    }
+
+    .post-title {
+        margin-top: 0;
+
+        a {
+            color: $color-accent;
+            text-transform: uppercase;
+            font-size: 26px;
+            font-weight: 900;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            line-height: 1.3em;
+            @include transition(all, 0.3s, ease);
+            @include hover-color($color-accent-hover); // turns teal on hover
+        }
+    }
+}
+
+// ============================
+// Footer
+// ============================
+footer {
+    padding: 30px 0;
+    text-align: center;
+    background: $color-footer-bg;
+    color: $color-footer-text;
+
+    a {
+        color: $color-footer-text;
+        @include hover-color($color-heading); // links go dark on hover
+    }
+
+    .footer-logo {
+        width: 200px;
+        margin: 20px auto;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .footer-social-links {
+        padding: 20px 0;
+        line-height: 2em;
+
+        a {
+            margin: 0 10px;
+            font-size: 16px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+
+            span {
+                // hide the "Facebook" / "Twitter" text labels on mobile,
+                // only the icon shows — text comes back at tablet width
+                display: none;
+            }
+        }
+    }
+
+    #footer-copyright {
+        padding: 20px 0;
+        font-size: 12px;
+        color: $color-footer-text;
+    }
+}
+
+// ============================
+// Tablet and up
+// ============================
+// Everything in this block only applies once the screen is at least
+// $breakpoint-tablet (650px) wide. This is where the mobile layout
+// (stacked, hidden nav) turns into the full desktop layout (horizontal
+// nav bar with a dropdown, image+text side by side, etc.)
+@include respond($breakpoint-tablet) {
+    .container {
+        width: 90%;
+    }
+
+    header {
+        nav {
+            max-width: 1170px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60px;
+
+            ul {
+                display: flex; // nav items go from hidden to a horizontal row
+
+                li {
+                    margin: 0 15px;
+                    position: relative; // anchors the dropdown sub-menu below it
+                    line-height: 24px;
+
+                    // the little down-arrow icon next to "Features"
+                    &.menu-item-has-children > a::after {
+                        margin-left: 7px;
+                        font-family: 'Font Awesome 5 Free';
+                        font-size: 13px;
+                        color: $color-accent;
+                        content: '\f078';
+                    }
+
+                    // reveal the dropdown sub-menu while hovering the parent <li>
+                    &:hover ul {
+                        visibility: visible;
+                        opacity: 1;
+                    }
+                }
+
+                // sub nav (the dropdown list under "Features")
+                ul {
+                    // hidden by default; the &:hover ul rule above makes it
+                    // visible again when the parent menu item is hovered
+                    visibility: hidden;
+                    opacity: 0;
+                    display: block;
+                    position: absolute;
+                    z-index: 9999;
+                    left: 0;
+                    background: #f0f0f0;
+                    @include transition(all, 0.2s, ease-out);
+
+                    li {
+                        border-top: 1px solid #e9e9e9;
+                        margin: 0;
+                    }
+
+                    a {
+                        display: block;
+                        color: $color-heading;
+                        min-width: 175px;
+                        margin: 0;
+                        padding: 20px 10px;
+                        line-height: 1.4em;
+                        letter-spacing: 1px;
+                        @include transition(color, 0.35s);
+
+                        &:hover {
+                            background: #ffffff;
+                            color: #000;
+                        }
+                    }
+                }
+            }
+
+            a {
+                font-family: $font-heading;
+                color: $color-accent;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                font-size: 12px;
+                font-weight: 900;
+                @include hover-color($color-accent-hover);
+            }
+        }
+    }
+
+    // underline under the currently active nav item ("Guides")
+    .current-menu-item a {
+        border-bottom: 2px solid $color-accent;
+    }
+
+    // posts: image and text sit side by side instead of stacked
+    article {
+        display: flex;
+
+        .image-part {
+            flex: 1;
+            overflow: hidden; // keeps the zoomed hover image from spilling out
+            margin-bottom: 0;
+
+            img {
+                @include transition(transform, 3.5s, ease-in-out);
+
+                // slow zoom-in effect when hovering the post image
+                &:hover {
+                    transform: scale(1.5, 1.5);
+                }
+            }
+        }
+
+        .content-part {
+            flex: 1;
+            padding-left: 50px;
+        }
+    }
+
+    // footer: bring the social link text labels back, with more spacing
+    footer {
+        .footer-social-links {
+            a {
+                margin: 0 28px;
+            }
+
+            i {
+                margin-right: 5px;
+            }
+
+            a span {
+                display: inline;
+                font-size: 11px;
+            }
+        }
+    }
+}
